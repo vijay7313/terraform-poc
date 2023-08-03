@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.terraform.dto.TerraformDTO;
 import com.terraform.service.TerraformService;
 import com.terraform.utils.ResponseHandler;
@@ -18,23 +17,21 @@ import com.terraform.utils.ResponseHandler;
 @RestController
 @RequestMapping("/terraform")
 public class TerraformController {
-	
-	
 
 	@Autowired
 	TerraformService terraformService;
+	
+	Map<String, Object> apiData = new HashMap<String, Object>();
 
 	@PostMapping("/createBucket")
 	@PreAuthorize("hasAuthority('RH')")
 	public ResponseEntity<?> createS3Bucket(@RequestBody TerraformDTO terraformDTO) {
 
-		Map<String, Object> apiData = new HashMap<String, Object>();
-		Map<String, Object> errorData = new HashMap<>();
-		
-		String response = terraformService.createS3Bucket(terraformDTO);
-		
+		terraformService.createS3Bucket(terraformDTO);
+
 		apiData.put("message", "S3 bucket created successfully!");
 		apiData.put("statusCode", HttpStatus.OK.value());
+		
 		return ResponseHandler.generateResponse("", apiData, null);
 	}
 
@@ -42,14 +39,11 @@ public class TerraformController {
 	@PreAuthorize("hasAuthority('RH')")
 	public ResponseEntity<?> createEC2(@RequestBody TerraformDTO terraformDTO) {
 
-		Map<String, Object> apiData = new HashMap<String, Object>();
-		Map<String, Object> errorData = new HashMap<>();
-		
-		String response = terraformService.createEC2(terraformDTO);
+		terraformService.createEC2(terraformDTO);
 
 		apiData.put("message", "EC2 instance created successfully!");
 		apiData.put("statusCode", HttpStatus.OK.value());
-		
+
 		return ResponseHandler.generateResponse("", apiData, null);
 	}
 

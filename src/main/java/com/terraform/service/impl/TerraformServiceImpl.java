@@ -20,7 +20,7 @@ public class TerraformServiceImpl implements TerraformService {
 //	String terraformWorkingDir = "/home/ec2-user/terraform/terraformfiles";
 
 	@Override
-	public String createS3Bucket(TerraformDTO terraformDTO) {
+	public void createS3Bucket(TerraformDTO terraformDTO) {
 
 		String[] initCommands = { terraformBinary, "init" };
 		commonUtilsForTerraform.executeTerraformCommand(initCommands, terraformWorkingDir, terraformDTO);
@@ -34,11 +34,11 @@ public class TerraformServiceImpl implements TerraformService {
 
 		commonUtilsForTerraform.deleteFilesExceptMainTf(terraformWorkingDir);
 
-		return "S3 bucket created successfully!";
 	}
 
 	@Override
-	public String createEC2(TerraformDTO terraformDTO) {
+	public void createEC2(TerraformDTO terraformDTO) {
+		
 		String[] initCommands = { terraformBinary, "init" };
 		commonUtilsForTerraform.executeTerraformCommand(initCommands, terraformWorkingDir, terraformDTO);
 
@@ -51,7 +51,6 @@ public class TerraformServiceImpl implements TerraformService {
 		
 		commonUtilsForTerraform.deleteFilesExceptMainTf(terraformWorkingDir);
 
-		return "EC2 instance created successfully!";
 	}
 
 }

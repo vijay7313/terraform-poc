@@ -4,7 +4,7 @@ import com.terraform.dto.TerraformDTO;
 
 public interface TerraformService {
 
-	String createS3Bucket(TerraformDTO terraformDTO);
+	void createS3Bucket(TerraformDTO terraformDTO);
 
-	String createEC2(TerraformDTO terraformDTO);
+	void createEC2(TerraformDTO terraformDTO);
 }
