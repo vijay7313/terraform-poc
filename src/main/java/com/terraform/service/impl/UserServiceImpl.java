@@ -17,7 +17,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public String getUserNameUsingEmail(String email) {
 		Optional<AuthModel> user=authenticationDAO.findByEmail(email);
-		System.out.println(user.get().getUserName());
 		return user.get().getUserName();
 	}
 	

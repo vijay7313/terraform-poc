@@ -45,7 +45,7 @@ public class SecurityConfig {
 	        .authorizeHttpRequests(
 	        		authorizeRequests -> 
 	        		authorizeRequests
-	        		.requestMatchers("/createUser","/authenticate","/checkUserNameAvailability").permitAll()
+	        		.requestMatchers("/authenticate").permitAll()
 	        		.anyRequest().
 	        		authenticated()
 	        		)
