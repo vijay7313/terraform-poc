@@ -1,9 +1,16 @@
 package com.terraform.service.impl;
 
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.terraform.dto.TerraformDTO;
+import com.terraform.dao.AuthenticationDAO;
+import com.terraform.dao.ServiceRequestDAO;
+import com.terraform.dto.ServiceRequestDTO;
+import com.terraform.model.AuthModel;
+import com.terraform.model.ServiceRequestModel;
 import com.terraform.service.TerraformService;
 import com.terraform.utils.CommonUtilsForTerraform;
 
@@ -13,44 +20,114 @@ public class TerraformServiceImpl implements TerraformService {
 	@Autowired
 	CommonUtilsForTerraform commonUtilsForTerraform;
 
-	String terraformBinary = "C:\\Program Files\\Terraform\\terraform";
-	String terraformWorkingDir = "V:\\terraform\\commonFile";
+	@Autowired
+	ServiceRequestDAO serviceRequestDAO;
 
-//	String terraformBinary = "/usr/bin/terraform";
-//	String terraformWorkingDir = "/home/ec2-user/terraform/terraformfiles";
+	@Autowired
+	AuthenticationDAO authenticationDAO;
+
+	@Autowired
+	ModelMapper modelMapper;
+
+//	String terraformBinary = "C:\\Program Files\\Terraform\\terraform";
+//	String terraformWorkingDir = "V:\\terraform\\commonFile";
+
+	String terraformBinary = "/usr/bin/terraform";
+	String terraformWorkingDir = "/home/ec2-user/terraform/terraformfiles";
+
+
+
+
 
 	@Override
-	public void createS3Bucket(TerraformDTO terraformDTO) {
+	public void createService(ServiceRequestDTO serviceRequestDTO) {
 
-		String[] initCommands = { terraformBinary, "init" };
-		commonUtilsForTerraform.executeTerraformCommand(initCommands, terraformWorkingDir, terraformDTO);
+		Optional<AuthModel> authDTO = authenticationDAO.findByEmail(serviceRequestDTO.getEmployeeMail());
 
-		String[] planCommands = { terraformBinary, "plan", "-out=tfplan", "-var",
-				"bucket_name=" + terraformDTO.getS3BucketName() };
-		commonUtilsForTerraform.executeTerraformCommand(planCommands, terraformWorkingDir, terraformDTO);
+		serviceRequestDTO.setEmplopyeeId(authDTO.get().getEmployeeId());
 
-		String[] applyCommands = { terraformBinary, "apply", "tfplan" };
-		commonUtilsForTerraform.executeTerraformCommand(applyCommands, terraformWorkingDir, terraformDTO);
+		serviceRequestDTO.setEmployeeName(authDTO.get().getUserName());
 
-		commonUtilsForTerraform.deleteFilesExceptMainTf(terraformWorkingDir);
+		serviceRequestDTO.setEmployeeMail(authDTO.get().getEmail());
+
+		serviceRequestDTO.setReportingHeadEmployeeId(authDTO.get().getReportingHead());
+
+		serviceRequestDTO.setRequestId(commonUtilsForTerraform.generateRequestId());
+
+		serviceRequestDTO.setCreatedDate(commonUtilsForTerraform.CurrentDateAndTime());
+
+		serviceRequestDTO.setRequestStatus("Pending");
+
+		// DTO to Entity
+		ServiceRequestModel request = modelMapper.map(serviceRequestDTO, ServiceRequestModel.class);
+
+		// Saved the Entity to DB
+		serviceRequestDAO.save(request);
 
 	}
 
 	@Override
-	public void createEC2(TerraformDTO terraformDTO) {
+	public List<ServiceRequestDTO> getAllRequestedServices(ServiceRequestDTO serviceRequestDTO) {
+
+		Optional<AuthModel> getReportingHeadEmployeeId = authenticationDAO
+				.findByEmail(serviceRequestDTO.getEmployeeMail());
+
+		List<ServiceRequestModel> requestedServiceListModel = serviceRequestDAO
+				.findByReportingHeadEmployeeId(getReportingHeadEmployeeId.get().getEmployeeId());
+
+		List<ServiceRequestDTO> requestedServiceList = new ArrayList<ServiceRequestDTO>();
+
+		// Entity to DTO
+		for (ServiceRequestModel model : requestedServiceListModel) {
+			ServiceRequestDTO dto = modelMapper.map(model, ServiceRequestDTO.class);
+			requestedServiceList.add(dto);
+		}
+		return requestedServiceList;
+
+	}
+
+	
+	@Override
+	public String serviceActionByRH(ServiceRequestDTO serviceRequestDTO) {
 		
+		ServiceRequestModel serviceGetByRequestId = serviceRequestDAO.findByRequestId(serviceRequestDTO.getRequestId());
+
+		// Entity to DTO
+		ServiceRequestDTO requestIdDataFromDB = modelMapper.map(serviceGetByRequestId, ServiceRequestDTO.class);
+		
+		if (serviceRequestDTO.getRequestStatus().equals("Approved")) {
+			
 		String[] initCommands = { terraformBinary, "init" };
-		commonUtilsForTerraform.executeTerraformCommand(initCommands, terraformWorkingDir, terraformDTO);
+		commonUtilsForTerraform.executeTerraformCommand(initCommands, terraformWorkingDir, requestIdDataFromDB);
 
 		String[] planCommands = { terraformBinary, "plan", "-out=tfplan", "-var",
-				"instance_name=" + terraformDTO.getEc2InstanceName() };
-		commonUtilsForTerraform.executeTerraformCommand(planCommands, terraformWorkingDir, terraformDTO);
+				"instance_name=" + requestIdDataFromDB.getServiceName() };
+		commonUtilsForTerraform.executeTerraformCommand(planCommands, terraformWorkingDir, requestIdDataFromDB);
 
 		String[] applyCommands = { terraformBinary, "apply", "tfplan" };
-		commonUtilsForTerraform.executeTerraformCommand(applyCommands, terraformWorkingDir, terraformDTO);
-		
-		commonUtilsForTerraform.deleteFilesExceptMainTf(terraformWorkingDir);
+		commonUtilsForTerraform.executeTerraformCommand(applyCommands, terraformWorkingDir, requestIdDataFromDB);
 
+		commonUtilsForTerraform.deleteFilesExceptMainTf(terraformWorkingDir);
+		
+		requestIdDataFromDB.setRequestStatus("Approved");
+
+		// DTO to Entity
+		ServiceRequestModel request = modelMapper.map(requestIdDataFromDB, ServiceRequestModel.class);
+
+		serviceRequestDAO.save(request);
+		}
+		
+		if (serviceRequestDTO.getRequestStatus().equals("Rejected")) {
+			
+			requestIdDataFromDB.setRequestStatus("Rejected");
+
+			// DTO to Entity
+			ServiceRequestModel request = modelMapper.map(requestIdDataFromDB, ServiceRequestModel.class);
+
+			serviceRequestDAO.save(request);
+		}
+		return requestIdDataFromDB.getRequestFor();
+		
 	}
 
 }

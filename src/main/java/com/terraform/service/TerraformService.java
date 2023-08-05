@@ -1,10 +1,16 @@
 package com.terraform.service;
 
+import java.util.List;
+
+import com.terraform.dto.ServiceRequestDTO;
 import com.terraform.dto.TerraformDTO;
 
 public interface TerraformService {
 
-	void createS3Bucket(TerraformDTO terraformDTO);
+	String serviceActionByRH(ServiceRequestDTO serviceRequestDTO);
 
-	void createEC2(TerraformDTO terraformDTO);
+	void createService(ServiceRequestDTO serviceRequestDTO);
+
+	List<ServiceRequestDTO> getAllRequestedServices(ServiceRequestDTO serviceRequestDTO);
+
 }

@@ -7,6 +7,7 @@ public class AuthDTO {
 	private String email;
 	private String password;
 	private String role;
+	private String reportingHead;
 
 	public String getEmployeeId() {
 		return employeeId;
@@ -46,6 +47,14 @@ public class AuthDTO {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public String getReportingHead() {
+		return reportingHead;
+	}
+
+	public void setReportingHead(String reportingHead) {
+		this.reportingHead = reportingHead;
 	}
 
 }

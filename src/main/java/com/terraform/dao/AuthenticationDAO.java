@@ -6,12 +6,10 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import com.terraform.model.AuthModel;
 
-
-
 @EnableScan
 @Repository
 public interface AuthenticationDAO extends CrudRepository<AuthModel, String> {
-	
-	Optional<AuthModel> findByEmail(String email);
-}
 
+	Optional<AuthModel> findByEmail(String email);
+
+}

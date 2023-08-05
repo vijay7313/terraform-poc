@@ -24,7 +24,7 @@ public class ResponseHandler {
         	map.put("responseData", "");
         
         if(apiDetails != null)
-        	map.put("apiStatus", apiDetails);
+        	map.put("responseStatus", apiDetails);
         
         return ResponseEntity.ok(map);
     }

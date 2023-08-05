@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.terraform.dto.ServiceRequestDTO;
 import com.terraform.dto.TerraformDTO;
 import com.terraform.service.TerraformService;
 import com.terraform.utils.ResponseHandler;
@@ -20,29 +22,25 @@ public class TerraformController {
 
 	@Autowired
 	TerraformService terraformService;
-	
+
 	Map<String, Object> apiData = new HashMap<String, Object>();
 
-	@PostMapping("/createBucket")
+	@PostMapping("/createService")
 	@PreAuthorize("hasAuthority('RH')")
-	public ResponseEntity<?> createS3Bucket(@RequestBody TerraformDTO terraformDTO) {
+	public ResponseEntity<?> createService(@RequestBody ServiceRequestDTO serviceRequestDTO) {
 
-		terraformService.createS3Bucket(terraformDTO);
-
-		apiData.put("message", "S3 bucket created successfully!");
-		apiData.put("statusCode", HttpStatus.OK.value());
+		String serviceType = terraformService.serviceActionByRH(serviceRequestDTO);
 		
-		return ResponseHandler.generateResponse("", apiData, null);
-	}
-
-	@PostMapping("/createEC2Iinstance")
-	@PreAuthorize("hasAuthority('RH')")
-	public ResponseEntity<?> createEC2(@RequestBody TerraformDTO terraformDTO) {
-
-		terraformService.createEC2(terraformDTO);
-
-		apiData.put("message", "EC2 instance created successfully!");
-		apiData.put("statusCode", HttpStatus.OK.value());
+		if (serviceRequestDTO.getRequestStatus().equals("Approved")) 
+		{
+			apiData.put("message", serviceType + " created successfully!");
+			apiData.put("statusCode", HttpStatus.OK.value());
+			
+		} else {
+			
+			apiData.put("message", "Service Request "+serviceRequestDTO.getRequestStatus()+"!");
+			apiData.put("statusCode", HttpStatus.OK.value());
+		}
 
 		return ResponseHandler.generateResponse("", apiData, null);
 	}

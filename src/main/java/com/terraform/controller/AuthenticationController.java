@@ -58,16 +58,20 @@ public class AuthenticationController {
 			apiData.put("statusCode", HttpStatus.OK.value());
 
 			return ResponseHandler.generateResponse(token, apiData, null);
-		} catch (BadCredentialsException badCredentialsException) {
+		} 
+		
+		catch (BadCredentialsException badCredentialsException) {
 			errorData.put("message", "Incorrect password");
 			errorData.put("statusCode", HttpStatus.UNAUTHORIZED.value());
 
-			return ResponseHandler.generateResponse("", "", errorData);
-		} catch (AuthenticationException authenticationException) {
+			return ResponseHandler.generateResponse("", errorData,"");
+		} 
+		
+		catch (AuthenticationException authenticationException) {
 			errorData.put("message", "Invalid email");
 			errorData.put("statusCode", HttpStatus.UNAUTHORIZED.value());
 
-			return ResponseHandler.generateResponse("", "", errorData);
+			return ResponseHandler.generateResponse("", errorData,"");
 		}
 
 	}

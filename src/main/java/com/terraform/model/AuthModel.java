@@ -11,18 +11,21 @@ import lombok.Data;
 public class AuthModel {
 	@DynamoDBHashKey
 	private String employeeId;
-	
+
 	@DynamoDBAttribute
 	private String userName;
-	
+
 	@DynamoDBAttribute
 	private String email;
-	
+
 	@DynamoDBAttribute
 	private String password;
-	
+
 	@DynamoDBAttribute
 	private String role;
+
+	@DynamoDBAttribute
+	private String reportingHead;
 
 	public String getEmployeeId() {
 		return employeeId;
@@ -62,6 +65,14 @@ public class AuthModel {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public String getReportingHead() {
+		return reportingHead;
+	}
+
+	public void setReportingHead(String reportingHead) {
+		this.reportingHead = reportingHead;
 	}
 
 }
