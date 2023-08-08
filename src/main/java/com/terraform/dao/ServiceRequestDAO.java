@@ -11,6 +11,8 @@ import com.terraform.model.ServiceRequestModel;
 public interface ServiceRequestDAO extends CrudRepository<ServiceRequestModel, String> {
 
 	List<ServiceRequestModel> findByReportingHeadEmployeeId(String employeeId);
+	
+	List<ServiceRequestModel> findByEmplopyeeId(String employeeId);
 
 	ServiceRequestModel findByRequestId(String requestId);
 }

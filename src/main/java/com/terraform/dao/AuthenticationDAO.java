@@ -11,5 +11,7 @@ import com.terraform.model.AuthModel;
 public interface AuthenticationDAO extends CrudRepository<AuthModel, String> {
 
 	Optional<AuthModel> findByEmail(String email);
+	
+	AuthModel findByEmployeeId(String employeeId);
 
 }

@@ -38,7 +38,7 @@ public class AuthenticationController {
 	@PostMapping("/authenticate")
 	public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthDTO authDTO) {
 
-		Map<String, Object> apiData = new HashMap<String, Object>();
+		Map<String, Object> responseData = new HashMap<String, Object>();
 		Map<String, Object> errorData = new HashMap<>();
 
 		try {
@@ -54,10 +54,10 @@ public class AuthenticationController {
 			 
 			String token = jwtTokenUtil.generateToken(userName,authDTO.getEmail(),role);
 
-			apiData.put("message", "LoggedIn Successfully");
-			apiData.put("statusCode", HttpStatus.OK.value());
+			responseData.put("message", "LoggedIn Successfully");
+			responseData.put("statusCode", HttpStatus.OK.value());
 
-			return ResponseHandler.generateResponse(token, apiData, null);
+			return ResponseHandler.generateResponse(token, responseData, null);
 		} 
 		
 		catch (BadCredentialsException badCredentialsException) {

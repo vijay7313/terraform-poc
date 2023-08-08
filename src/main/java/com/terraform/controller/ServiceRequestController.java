@@ -23,7 +23,7 @@ public class ServiceRequestController {
 	@Autowired
 	TerraformService terraformService;
 
-	Map<String, Object> apiData = new HashMap<String, Object>();
+	Map<String, Object> responseData = new HashMap<String, Object>();
 
 	@PostMapping("/createRequest")
 	@PreAuthorize("hasAuthority('RH') or hasAuthority('EMPLOYEE')")
@@ -31,29 +31,29 @@ public class ServiceRequestController {
 
 		terraformService.createService(serviceRequestDTO);
 
-		apiData.put("message", "Service request created successfully!");
-		apiData.put("statusCode", HttpStatus.OK.value());
+		responseData.put("message", "Service request created successfully!");
+		responseData.put("statusCode", HttpStatus.OK.value());
 
-		return ResponseHandler.generateResponse("", apiData, null);
+		return ResponseHandler.generateResponse("", responseData, null);
 
 	}
 
 	@PostMapping("/getAllRequestedServices")
-	@PreAuthorize("hasAuthority('RH') or hashAuthority('EMPLOYEE')")
+	@PreAuthorize("hasAuthority('RH') or hasAuthority('EMPLOYEE')")
 	public ResponseEntity<?> getRequstedDetails(@RequestBody ServiceRequestDTO serviceRequestDTO) {
 
 		Map<String, Object> getAllRequests = new HashMap<String, Object>();
 
 		List<ServiceRequestDTO> response = terraformService.getAllRequestedServices(serviceRequestDTO);
 		if (!response.isEmpty()) {
-			apiData.put("message", "requests fetched successfully!");
-			apiData.put("statusCode", HttpStatus.OK.value());
+			responseData.put("message", "requests fetched successfully!");
+			responseData.put("statusCode", HttpStatus.OK.value());
 			getAllRequests.put("getAllRequests", response);
-			return ResponseHandler.generateResponse("", apiData, getAllRequests);
+			return ResponseHandler.generateResponse("", responseData, getAllRequests);
 		}
-		apiData.put("message", "No service requests found!");
-		apiData.put("statusCode", HttpStatus.OK.value());
-		return ResponseHandler.generateResponse("", apiData, "");
+		responseData.put("message", "No service requests found!");
+		responseData.put("statusCode", HttpStatus.OK.value());
+		return ResponseHandler.generateResponse("", responseData, "");
 
 	}
 }

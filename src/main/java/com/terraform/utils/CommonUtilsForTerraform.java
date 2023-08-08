@@ -8,14 +8,22 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
 import org.springframework.stereotype.Service;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.terraform.dto.ServiceRequestDTO;
+import com.amazonaws.services.simpleemail.model.Body;
+import com.amazonaws.services.simpleemail.model.Content;
+import com.amazonaws.services.simpleemail.model.Destination;
+import com.amazonaws.services.simpleemail.model.Message;
+import com.amazonaws.services.simpleemail.model.SendEmailRequest;
+import com.amazonaws.services.simpleemail.model.SendEmailResult;
 
 @Service
 public class CommonUtilsForTerraform {
 
 	private static final int MIN_ID = 10000000; // Minimum value of the 8-digit ID (10^7)
 	private static final int MAX_ID = 99999999; // Maximum value of the 8-digit ID (10^8 - 1)
-
 
 	public void executeTerraformCommand(String[] commands, String workingDir, ServiceRequestDTO serviceRequestDTO) {
 
@@ -96,5 +104,41 @@ public class CommonUtilsForTerraform {
 		int id = random.nextInt(MAX_ID - MIN_ID + 1) + MIN_ID;
 		return String.format("%08d", id);
 
+	}
+
+	public String sendMailSES(ServiceRequestDTO employeeDetails, String fromAddress) {
+		
+		String toAddress = employeeDetails.getEmployeeMail();
+
+		String subject = "Service request was " + employeeDetails.getRequestStatus();
+
+		String body = 
+				"<p>Dear " + employeeDetails.getEmployeeName() + ",</p>" +
+				"<p>Your request for creating " + 
+				employeeDetails.getRequestFor() + " was " + employeeDetails.getRequestStatus() + ".</p>";
+
+		AmazonSimpleEmailService client = 
+				AmazonSimpleEmailServiceClientBuilder
+				.standard()
+				.withRegion(Regions.AP_SOUTH_1)
+				.build();
+
+		 SendEmailRequest request = 
+				 new SendEmailRequest()
+				 .withDestination(new Destination()
+				 .withToAddresses(toAddress))
+		         .withMessage(new Message()
+		         .withBody(new Body()
+		         .withHtml(new Content()
+		         .withCharset("UTF-8")
+		         .withData(body)))
+		         .withSubject(new Content()
+		         .withCharset("UTF-8")
+		         .withData(subject)))
+		         .withSource(fromAddress);
+		 
+		SendEmailResult response = client.sendEmail(request);
+		
+		return "Success";
 	}
 }

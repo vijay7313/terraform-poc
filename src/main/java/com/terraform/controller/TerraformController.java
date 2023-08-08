@@ -23,7 +23,7 @@ public class TerraformController {
 	@Autowired
 	TerraformService terraformService;
 
-	Map<String, Object> apiData = new HashMap<String, Object>();
+	Map<String, Object> responseData = new HashMap<String, Object>();
 
 	@PostMapping("/createService")
 	@PreAuthorize("hasAuthority('RH')")
@@ -33,16 +33,16 @@ public class TerraformController {
 		
 		if (serviceRequestDTO.getRequestStatus().equals("Approved")) 
 		{
-			apiData.put("message", serviceType + " created successfully!");
-			apiData.put("statusCode", HttpStatus.OK.value());
+			responseData.put("message", serviceType + " created successfully!");
+			responseData.put("statusCode", HttpStatus.OK.value());
 			
 		} else {
 			
-			apiData.put("message", "Service Request "+serviceRequestDTO.getRequestStatus()+"!");
-			apiData.put("statusCode", HttpStatus.OK.value());
+			responseData.put("message", "Service Request "+serviceRequestDTO.getRequestStatus()+"!");
+			responseData.put("statusCode", HttpStatus.OK.value());
 		}
 
-		return ResponseHandler.generateResponse("", apiData, null);
+		return ResponseHandler.generateResponse("", responseData, null);
 	}
 
 }
