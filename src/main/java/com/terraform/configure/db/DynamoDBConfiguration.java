@@ -18,7 +18,7 @@ public class DynamoDBConfiguration {
 	String endpoint;
 	@Value("ap-south-1")
 	String region;
-	@Value("AKIASXRNKFU45JUZSR7E")
+	@Value("")
 	String accesskey;
 	@Value("P7JF6JnUUf5o++xHECGyokmCQp4nD43kUlhdg4C3")
 	String secretkey;
