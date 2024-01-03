@@ -20,7 +20,7 @@ public class DynamoDBConfiguration {
 	String region;
 	@Value("")
 	String accesskey;
-	@Value("P7JF6JnUUf5o++xHECGyokmCQp4nD43kUlhdg4C3")
+	@Value("")
 	String secretkey;
 
 	@Bean
